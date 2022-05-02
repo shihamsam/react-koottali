@@ -11,15 +11,31 @@ export default function Share() {
   const desc = useRef("");
   const [file, setFile] = useState(null);
 
-  const shareHandler = async (e) => {
-    e.preventdefault();
+  const handleShare = async (e) => {
+    e.preventDefault();
+
     const newPost = {
       userId: user._id,
       desc: desc.current.value,
     };
 
+    if (file) {
+      const data = new FormData();
+      const fileName = Date.now() + file.name;
+      data.append("name", fileName);
+      data.append("file", file);
+      newPost.img = fileName;
+
+      try {
+        await axios.post("/upload", data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     try {
       await axios.post("/posts", newPost);
+      window.location.reload();
     } catch (error) {
       console.log("Share failed, ", error);
     }
@@ -45,7 +61,7 @@ export default function Share() {
           />
         </div>
         <hr className="shareHr" />
-        <form className="shareBottom" onSubmit={shareHandler}>
+        <form className="shareBottom" onSubmit={handleShare}>
           <div className="shareOptions">
             <label htmlFor="file" className="shareOption">
               <PermMedia htmlColor="tomato" className="shareIcon" />

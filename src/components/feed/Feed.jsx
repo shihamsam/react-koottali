@@ -7,10 +7,10 @@ import { AuthContext } from "../../context/AuthContext";
 
 // import {Posts} from "../../dummyData"
 
-export default function Feed({username}) {
+export default function Feed({ username }) {
   const [posts, setPosts] = useState([]);
 
-  const {user} = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -20,7 +20,11 @@ export default function Feed({username}) {
 
       // const resp =  await axios.get(`/posts/profile/${username}`)
 
-      setPosts(resp.data);
+      setPosts(
+        resp.data.sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        })
+      );
     };
     fetchPosts();
   }, [username, user._id]);
